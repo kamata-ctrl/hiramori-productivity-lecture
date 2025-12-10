@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>平森先生の経営教室：一人生産性175万円の秘密</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* Slate 50 */
+            color: #1e293b; /* Slate 800 */
+        }
+        .step-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        /* Bucket Animation Styles */
+        .water-stream {
+            width: 10px;
+            background-color: #3b82f6;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flow 1s linear infinite;
+        }
+        .water-level {
+            width: 100%;
+            background-color: #60a5fa; /* Blue 400 */
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            transition: height 1s linear;
+        }
+        .water-leak {
+            width: 6px;
+            background-color: #60a5fa;
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .water-leak.leaking {
+            opacity: 1;
+            height: 50px;
+            animation: flow 0.5s linear infinite;
+        }
+
+        /* Tree/Agriculture Animation */
+        .tree-container {
+            position: relative;
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .tree-stage {
+            transition: all 0.5s ease-out;
+            transform-origin: bottom center;
+        }
+        .fruit {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .fruit.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        @keyframes flow {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        @keyframes grow {
+            from { transform: scaleY(0); }
+            to { transform: scaleY(1); }
+        }
+
+        /* Interactive Toggle Switch */
+        .model-toggle {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .model-toggle.active {
+            background-color: #eab308; /* Amber 500 */
+            color: white;
+            border-color: #eab308;
+        }
+    </style>
+
+    <!-- Palette: Consistent with previous lecture (Navy & Gold) -->
+    <!-- Application Structure:
+         1. Hero: The "175 Million" Productivity Hook.
+         2. Step 1: The Paradox (Don't try hard).
+         3. Step 2: Bucket Theory Visualized (Leak vs No Leak).
+         4. Step 3: Hunting vs Farming Model Comparison.
+         5. Step 4: Health Deviation Value & Harvest.
+         6. Footer.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used (using CSS/Emoji/Canvas). NO Mermaid JS used. -->
+</head>
+<body class="antialiased pb-20">
+
+    <!-- Header Section -->
+    <header class="bg-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8 shadow-xl">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="inline-block bg-amber-500 text-slate-900 text-sm font-bold px-3 py-1 rounded-full mb-4 shadow-lg">
+                平森先生の経営教室 Vol.2
+            </div>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black mb-6 leading-tight tracking-tight">
+                なぜ<span class="text-amber-400">頑張らない</span>のに、<br>一人生産性<span class="text-amber-400 text-6xl align-middle mx-2">175</span>万円なのか？
+            </h1>
+            <p class="text-lg text-slate-300 max-w-2xl mx-auto border-t border-slate-700 pt-6 mt-6">
+                業界平均（60〜80万円）の約<span class="font-bold text-white">3倍</span>。<br>
+                クロージングも、高額回数券も、新規集客も頑張らない。<br>
+                その秘密は、バケツの「底」にありました。
+            </p>
+        </div>
+    </header>
+
+    <!-- Navigation (Simple Anchor Links) -->
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-slate-200">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4 text-xs sm:text-sm font-bold text-slate-500 overflow-x-auto whitespace-nowrap gap-4">
+                <a href="#intro" class="hover:text-amber-600 transition-colors">1. 3倍の生産性</a>
+                <a href="#bucket" class="hover:text-amber-600 transition-colors">2. バケツの穴</a>
+                <a href="#farming" class="hover:text-amber-600 transition-colors">3. 狩猟vs農耕</a>
+                <a href="#harvest" class="hover:text-amber-600 transition-colors">4. 実がなる仕組み</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-4 py-8 space-y-16">
+
+        <!-- Intro: The Paradox -->
+        <section id="intro" class="scroll-mt-24">
+            <div class="step-card p-8 bg-gradient-to-br from-white to-slate-50 border-l-8 border-amber-500">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+                    <span class="bg-slate-800 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">?</span>
+                    なぜ、頑張らない方が売れるのか？
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-4 text-slate-600">
+                        <p>
+                            多くの先生は、売上を上げようとして<br>
+                            <span class="font-bold text-blue-600 bg-blue-50 px-1">「新規集客（蛇口）」を全開</span>にしようとします。
+                        </p>
+                        <p>
+                            そして、来た患者さんには<br>
+                            <span class="font-bold text-red-500 bg-red-50 px-1">「高額回数券」でクロージング</span>をかけます。
+                        </p>
+                        <p class="font-bold text-slate-800 pt-2">
+                            実は、これこそが「終わりのない労働」の原因です。
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-inner border border-slate-200 text-center">
+                        <p class="text-xs text-slate-400 mb-2 uppercase tracking-widest">Productivity Comparison</p>
+                        <div class="flex items-end justify-center gap-4 h-40 pb-2">
+                            <div class="w-16 bg-slate-300 rounded-t-lg relative group" style="height: 35%">
+                                <span class="absolute -top-6 w-full text-xs font-bold text-slate-500">平均<br>60万</span>
+                                <span class="absolute bottom-2 w-full text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">頑張る</span>
+                            </div>
+                            <div class="w-16 bg-amber-400 rounded-t-lg relative group shadow-[0_0_15px_rgba(251,191,36,0.5)]" style="height: 100%">
+                                <span class="absolute -top-6 w-full text-lg font-black text-amber-600">175万</span>
+                                <span class="absolute bottom-2 w-full text-xs font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity">頑張らない</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2">私の院は、スタッフ全員がこの水準です。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 2: The Bucket Theory (Interactive) -->
+        <section id="bucket" class="scroll-mt-24">
+            <h3 class="text-blue-900 font-bold tracking-wider text-sm uppercase mb-2">The Bucket Theory</h3>
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">バケツの「穴」と「蛇口」の話</h2>
+
+            <div class="step-card p-8">
+                <!-- Controls -->
+                <div class="flex justify-center mb-8 bg-slate-100 p-1 rounded-lg w-max mx-auto">
+                    <button onclick="setBucketMode('leaky')" id="btn-leaky" class="model-toggle px-6 py-2 rounded-md font-bold text-sm text-slate-500 hover:text-slate-800">
+                        一般的な院 (狩猟型)
+                    </button>
+                    <button onclick="setBucketMode('solid')" id="btn-solid" class="model-toggle active px-6 py-2 rounded-md font-bold text-sm bg-white shadow-sm text-slate-800">
+                        私の院 (農耕型)
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <!-- Text Explanation -->
+                    <div class="flex flex-col justify-center space-y-4">
+                        <div id="text-leaky" class="hidden">
+                            <h4 class="text-xl font-bold text-red-500 mb-2">🚫 自ら穴を開けていませんか？</h4>
+                            <p class="text-slate-600">
+                                「回数券が終わったら卒業」<br>
+                                「痛みが取れたら卒業」
+                            </p>
+                            <p class="text-slate-600 mt-2">
+                                これは、せっかく溜めた水（利益）を、<br>
+                                <strong>「卒業」という名の穴</strong>から捨てているのと同じです。<br>
+                                だから、常に新しい水を注ぎ続ける（集客する）必要があるのです。
+                            </p>
+                        </div>
+                        <div id="text-solid">
+                            <h4 class="text-xl font-bold text-amber-500 mb-2">✅ 穴がないから、溢れる</h4>
+                            <p class="text-slate-600">
+                                私の院の離患率は<strong>5〜6%</strong>。<br>
+                                つまり、<strong>95%の患者さんが翌月も残ります。</strong>
+                            </p>
+                            <p class="text-slate-600 mt-2">
+                                蛇口（集客）をひねる必要はありません。<br>
+                                穴を塞いでいるだけで、水（利益）は勝手に溜まり、<br>
+                                やがて溢れ出します。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Visual Animation -->
+                    <div class="relative bg-slate-50 h-64 rounded-xl border border-slate-200 flex justify-center pt-8 overflow-hidden">
+                        <!-- Faucet -->
+                        <div class="absolute top-2 left-1/2 -translate-x-1/2 text-4xl z-20">🚰</div>
+
+                        <!-- Water Stream -->
+                        <div class="water-stream" style="top: 45px; height: 100px;"></div>
+
+                        <!-- Bucket -->
+                        <div class="relative w-32 h-40 border-l-4 border-r-4 border-b-4 border-slate-400 rounded-b-lg bg-white/50 z-10 overflow-hidden mt-10">
+                            <!-- Water inside -->
+                            <div id="bucket-water" class="water-level" style="height: 90%"></div>
+
+                            <!-- The Hole Label -->
+                            <div id="hole-label" class="absolute bottom-2 w-full text-center text-xs font-bold text-red-500 hidden">
+                                穴（卒業）
+                            </div>
+                        </div>
+
+                        <!-- Leaking Water -->
+                        <div id="water-leak" class="water-leak"></div>
+
+                        <!-- Puddle -->
+                        <div id="puddle" class="absolute bottom-2 w-48 h-4 bg-blue-200 rounded-full opacity-0 transition-opacity duration-1000"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: Hunting vs Farming (Chart) -->
+        <section id="farming" class="scroll-mt-24">
+            <h3 class="text-blue-900 font-bold tracking-wider text-sm uppercase mb-2">Business Model</h3>
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">「狩猟型」と「農耕型」の決定的な違い</h2>
+
+            <div class="step-card p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="bg-red-50 p-6 rounded-lg border border-red-100">
+                        <div class="text-3xl mb-3">🏹 狩猟型モデル</div>
+                        <ul class="text-sm text-slate-700 space-y-2">
+                            <li>・常に新しい患者（獲物）を追いかける</li>
+                            <li>・「今すぐ客」を奪い合う</li>
+                            <li>・労働を止めると、収入も止まる</li>
+                            <li class="font-bold text-red-600 mt-2">＝ 終わりのない労働</li>
+                        </ul>
+                    </div>
+                    <div class="bg-amber-50 p-6 rounded-lg border border-amber-100">
+                        <div class="text-3xl mb-3">🌾 農耕型モデル</div>
+                        <ul class="text-sm text-slate-700 space-y-2">
+                            <li>・1人の患者さんと長く付き合う</li>
+                            <li>・関係性を育てて、実（利益）を得る</li>
+                            <li>・時間が経つほど資産が積み上がる</li>
+                            <li class="font-bold text-amber-600 mt-2">＝ 毎年、収穫が増えていく</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="h-64 w-full">
+                    <canvas id="modelChart"></canvas>
+                </div>
+                <p class="text-center text-xs text-slate-400 mt-2">
+                    時間は経過するほど、農耕型（私の院）の利益は指数関数的に伸びていきます。
+                </p>
+            </div>
+        </section>
+
+        <!-- Step 4: Health Deviation & Harvest -->
+        <section id="harvest" class="scroll-mt-24">
+            <h3 class="text-blue-900 font-bold tracking-wider text-sm uppercase mb-2">The Mechanism</h3>
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">健康偏差値が高まると「実」がなる</h2>
+
+            <div class="step-card p-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-bl-lg">
+                    SUCCESS MECHANISM
+                </div>
+
+                <p class="text-lg text-slate-700 mb-8 leading-relaxed">
+                    長く通っていただく中で、私たちは患者さんの<strong>「健康偏差値」</strong>を育てています。<br>
+                    健康への意識が高まった患者さんは、売り込まなくても<br>
+                    <span class="bg-amber-100 font-bold px-1">「先生、それもやりたいです」</span>と言ってくださいます。
+                </p>
+
+                <!-- Interactive Tree Visualization -->
+                <div class="bg-gradient-to-b from-blue-50 to-green-50 rounded-xl p-8 border border-slate-200 text-center">
+                    <div class="flex flex-col items-center">
+                        <div class="mb-4 text-sm font-bold text-slate-500">
+                            時間の経過（通院期間）
+                        </div>
+                        <!-- Slider for Growth -->
+                        <input type="range" id="growthSlider" min="0" max="3" step="1" value="0" class="w-full max-w-md mb-8 accent-green-600 cursor-pointer">
+
+                        <div class="tree-container w-full max-w-md mx-auto">
+                            <!-- Ground -->
+                            <div class="absolute bottom-0 w-full h-4 bg-[#8d6e63] rounded-full"></div>
+
+                            <!-- Tree Logic (Emoji Based for Simplicity & Performance) -->
+                            <div id="tree-visual" class="text-[100px] leading-none relative z-10 transition-all duration-500">
+                                🌱
+                            </div>
+
+                            <!-- Fruits (Absolute positioned relative to container) -->
+                            <div id="fruit-1" class="fruit absolute top-10 left-1/3">🍎<span class="text-xs bg-white/80 px-1 rounded block shadow-sm">物販</span></div>
+                            <div id="fruit-2" class="fruit absolute top-4 right-1/3">🍊<span class="text-xs bg-white/80 px-1 rounded block shadow-sm">美容</span></div>
+                            <div id="fruit-3" class="fruit absolute top-16 right-1/4">🍇<span class="text-xs bg-white/80 px-1 rounded block shadow-sm">家族紹介</span></div>
+                        </div>
+
+                        <div id="growth-text" class="mt-6 text-lg font-bold text-slate-800 h-16">
+                            種まき：初診・信頼構築
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <section class="bg-slate-900 text-white p-10 rounded-3xl text-center space-y-6 shadow-2xl mx-4 lg:mx-0">
+            <h2 class="text-2xl font-bold text-amber-400">結論：努力の方向を変える</h2>
+            <div class="max-w-2xl mx-auto space-y-4 text-slate-300 leading-relaxed text-lg">
+                <p>
+                    私が「頑張っていない」わけではありません。<br>
+                    <span class="text-white font-bold border-b border-white/30">「集客」や「売り込み」を頑張るのをやめた</span>のです。
+                </p>
+                <p>
+                    その代わり、<br>
+                    <span class="text-amber-400 font-bold text-xl">「穴を塞ぐこと（離患防止）」</span>と<br>
+                    <span class="text-amber-400 font-bold text-xl">「育てること（健康偏差値向上）」</span><br>
+                    だけに全力を注いでいます。
+                </p>
+                <p class="pt-4">
+                    これが、一人生産性175万円の正体です。
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-100 text-slate-500 text-center py-8 text-sm border-t border-slate-200">
+        <p>&copy; 平森先生の経営教室 | All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // --- Bucket Animation Logic ---
+        function setBucketMode(mode) {
+            const btnLeaky = document.getElementById('btn-leaky');
+            const btnSolid = document.getElementById('btn-solid');
+            const textLeaky = document.getElementById('text-leaky');
+            const textSolid = document.getElementById('text-solid');
+
+            const bucketWater = document.getElementById('bucket-water');
+            const leak = document.getElementById('water-leak');
+            const puddle = document.getElementById('puddle');
+            const holeLabel = document.getElementById('hole-label');
+
+            if (mode === 'leaky') {
+                // UI Toggle
+                btnLeaky.classList.add('active', 'bg-red-500', 'text-white');
+                btnLeaky.classList.remove('text-slate-500');
+                btnSolid.classList.remove('active', 'bg-white', 'shadow-sm', 'text-slate-800');
+                btnSolid.classList.add('text-slate-500');
+
+                // Text Toggle
+                textLeaky.classList.remove('hidden');
+                textSolid.classList.add('hidden');
+
+                // Animation State: Leaking
+                bucketWater.style.height = '30%'; // Water level drops
+                leak.classList.add('leaking');
+                puddle.style.opacity = '1';
+                holeLabel.classList.remove('hidden');
+
+            } else {
+                // UI Toggle
+                btnSolid.classList.add('active', 'bg-white', 'shadow-sm', 'text-slate-800');
+                btnSolid.classList.remove('text-slate-500');
+                btnLeaky.classList.remove('active', 'bg-red-500', 'text-white');
+                btnLeaky.classList.add('text-slate-500');
+
+                // Text Toggle
+                textSolid.classList.remove('hidden');
+                textLeaky.classList.add('hidden');
+
+                // Animation State: Solid
+                bucketWater.style.height = '90%'; // Water level rises
+                leak.classList.remove('leaking');
+                puddle.style.opacity = '0';
+                holeLabel.classList.add('hidden');
+            }
+        }
+
+        // --- Tree Growth Logic ---
+        const slider = document.getElementById('growthSlider');
+        const treeVisual = document.getElementById('tree-visual');
+        const growthText = document.getElementById('growth-text');
+        const fruits = [
+            document.getElementById('fruit-1'),
+            document.getElementById('fruit-2'),
+            document.getElementById('fruit-3')
+        ];
+
+        const stages = [
+            { icon: "🌱", text: "種まき：<br>初診・信頼構築<br><span class='text-sm font-normal text-slate-500'>まだ実はなりません</span>" },
+            { icon: "🌿", text: "成長期：<br>健康偏差値の向上<br><span class='text-sm font-normal text-slate-500'>「痛み」以外の価値に気づき始めます</span>" },
+            { icon: "🌳", text: "成熟期：<br>ファン化・定着<br><span class='text-sm font-normal text-slate-500'>離患率5%以下の状態</span>" },
+            { icon: "🌳", text: "収穫期：<br>LTV最大化<br><span class='text-sm font-normal text-slate-500'>「物販」「美容」「紹介」が自然発生します</span>" }
+        ];
+
+        slider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            const stage = stages[val];
+
+            treeVisual.innerHTML = stage.icon;
+            growthText.innerHTML = stage.text;
+
+            // Manage Fruits visibility
+            if (val === 3) {
+                fruits.forEach((f, i) => {
+                    setTimeout(() => f.classList.add('visible'), i * 200);
+                });
+            } else {
+                fruits.forEach(f => f.classList.remove('visible'));
+            }
+        });
+
+        // --- Chart.js: Hunting vs Farming ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial states
+            setBucketMode('solid');
+
+            const ctx = document.getElementById('modelChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1年目', '2年目', '3年目', '4年目', '5年目'],
+                    datasets: [
+                        {
+                            label: '農耕型 (私の院)',
+                            data: [100, 150, 225, 340, 500], // Exponential growth (Compound interest effect of relationships)
+                            borderColor: '#eab308', // Amber
+                            backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: '狩猟型 (一般的な院)',
+                            data: [100, 100, 100, 100, 100], // Linear/Flat (Reset every month)
+                            borderColor: '#ef4444', // Red
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0,
+                            pointStyle: 'crossRot'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                title: () => '',
+                                label: (context) => {
+                                    return context.dataset.label + ': 利益イメージ ' + context.parsed.y;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            display: false, // Abstract "Profit/Asset" value
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
